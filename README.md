@@ -76,3 +76,17 @@ Localization and multi-language support
 
 🤝 Disclaimer
 This project is for educational and research purposes only. It is not intended to replace professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider for medical concerns.
+
+![image](https://github.com/user-attachments/assets/673ff33c-df50-42c6-be90-d1aa7ba00509)
+
+![image](https://github.com/user-attachments/assets/066efe69-d020-4c49-a188-bf65eaa1e4f6)
+
+![image](https://github.com/user-attachments/assets/49835b81-b64a-474e-9eb2-18732b25ef1f)
+
+![image](https://github.com/user-attachments/assets/45c6caff-1fd3-44fe-88b3-51c55f93b2c2)
+
+![image](https://github.com/user-attachments/assets/73de59d5-68cb-4852-96f5-723182a491de)
+
+
+
+
