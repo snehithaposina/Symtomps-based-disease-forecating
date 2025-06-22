@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Styles for alignment and appearance */
+        body {
+            background: linear-gradient(135deg, #e1e5ff, #d7e5ff);
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 40px 20px;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        .report-container {
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 35px;
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .report-title {
+            font-weight: 600;
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        hr {
+            border: none;
+            height: 1px;
+            background-color: #bdc3c7;
+            margin: 15px 0 25px 0;
+        }
+        .report-content {
+            background: rgba(255, 255, 255, 0.6);
+            padding: 25px;
+            border-radius: 10px;
+            font-size: 15px;
+            text-align: left;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        .report-item {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+            align-items: baseline;
+            line-height: 1.5;
+        }
+        .report-item .label {
+            min-width: 200px; /* Adjust as needed */
+            flex-basis: 200px; /* Adjust as needed */
+            font-weight: 600;
+            color: #34495e;
+            padding-right: 15px;
+            flex-shrink: 0;
+            box-sizing: border-box;
+        }
+        .report-item .value {
+            color: #555;
+            flex-grow: 1;
+            flex-basis: calc(100% - 215px); /* Adjust based on label width+padding */
+            word-break: break-word;
+            box-sizing: border-box;
+        }
+        .prediction-heading {
+            font-weight: 600;
+            margin-top: 25px;
+            margin-bottom: 18px;
+            color: #2c3e50;
+            font-size: 17px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+        .report-actions {
+            margin-top: 20px;
+        }
+        .btn-custom {
+            padding: 10px 22px;
+            font-size: 15px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none !important;
+            display: inline-block;
+            margin: 5px 10px;
+            vertical-align: middle;
+        }
+        .btn-download {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-download:hover {
+            background-color: #218838;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-1px);
+        }
+        .btn-back {
+            background-color: #6c757d;
+            color: white;
+        }
+        .btn-back:hover {
+            background-color: #5a6268;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-1px);
+        }
+        @media (max-width: 600px) {
+            /* Optional responsive styles */
+            .report-container { width: 95%; padding: 20px; }
+            .report-item .label { min-width: 100%; flex-basis: 100%; padding-right: 0; margin-bottom: 3px; }
+            .report-item .value { flex-basis: 100%; }
+            .btn-custom { width: calc(50% - 20px); margin: 5px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <h2 class="report-title">Medical Report</h2>
+        <hr>
+
+        <!-- Corrected: Displaying data using patient_details and predictions -->
+        <div class="report-content">
+            <div class="report-item">
+                <span class="label">Full Name:</span>
+                {# Access title, first_name, last_name from patient_details dict #}
+                <span class="value">{{ patient_details.title | default('') }} {{ patient_details.first_name | default('N/A') }} {{ patient_details.last_name | default('') }}</span>
+            </div>
+            <div class="report-item">
+                <span class="label">Age:</span>
+                {# Access age from patient_details dict #}
+                <span class="value">{{ patient_details.age | default('N/A') }}</span>
+            </div>
+            <div class="report-item">
+                <span class="label">Gender:</span>
+                {# Access gender from patient_details dict #}
+                <span class="value">{{ patient_details.gender | default('N/A') }}</span>
+            </div>
+            <div class="report-item">
+                <span class="label">Reported Symptoms:</span>
+                {# Access symptoms list from patient_details dict and join it #}
+                <span class="value">{{ patient_details.symptoms | join(', ') | default('N/A') }}</span>
+            </div>
+
+            <div class="prediction-heading">Prediction Details</div>
+
+            <div class="report-item">
+                <span class="label">SVM Model Prediction:</span>
+                {# Access svm_model_prediction from predictions dict #}
+                <span class="value">{{ predictions.svm_model_prediction | default('N/A') }}</span>
+            </div>
+            <div class="report-item">
+                <span class="label">Naive Bayes Prediction:</span>
+                 {# Access naive_bayes_prediction from predictions dict #}
+                <span class="value">{{ predictions.naive_bayes_prediction | default('N/A') }}</span>
+            </div>
+            <div class="report-item">
+                <span class="label">KNN Model Prediction:</span>
+                 {# Access knn_model_prediction from predictions dict #}
+                <span class="value">{{ predictions.knn_model_prediction | default('N/A') }}</span>
+            </div>
+            <div class="report-item">
+                <span class="label">Final Prediction:</span>
+                 {# Access final_prediction from predictions dict #}
+                <span class="value"><b>{{ predictions.final_prediction | default('N/A') }}</b></span>
+            </div>
+            <div class="report-item">
+                <span class="label">Recommended Specialist(s):</span>
+                 {# Access specialists list from predictions dict and join it #}
+                <span class="value">{{ predictions.specialists | join(', ') | default('N/A') }}</span>
+            </div>
+
+            <!-- Corrected: Optional Display Precautions -->
+            {% if predictions.precautions %} {# Check if precautions list exists in predictions dict #}
+            <div class="prediction-heading" style="margin-top: 20px;">Recommended Precautions</div>
+            <ul>
+                {% for precaution in predictions.precautions %} {# Iterate over precautions list #}
+                <li style="margin-bottom: 5px; color: #555;">{{ precaution }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+        </div>
+
+        <div class="report-actions">
+            <!-- Download form uses POST -->
+            <form action="{{ url_for('download_report') }}" method="post" style="display:inline;">
+                <!-- Hidden fields using patient_details if needed by download logic (though session is preferred) -->
+                <input type="hidden" name="first_name_hidden" value="{{ patient_details.first_name | default('') }}">
+                <input type="hidden" name="last_name_hidden" value="{{ patient_details.last_name | default('') }}">
+                <button type="submit" class="btn-custom btn-download">Download PDF</button>
+            </form>
+            <!-- Back button uses GET -->
+            <a href="{{ url_for('index') }}" class="btn-custom btn-back">Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>

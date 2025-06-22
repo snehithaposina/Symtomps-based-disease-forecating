@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Prediction Report</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap">
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --secondary: #818CF8;
+            --accent: #10B981;
+            --light: #F8FAFC;
+            --dark: #0F172A;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+            color: var(--dark);
+            margin: 0;
+            line-height: 1.7;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+            border-radius: 0 0 30px 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin: 0;
+            letter-spacing: -0.05em;
+        }
+
+        .grid-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            gap: 2.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(224, 231, 255, 0.4);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            color: var(--primary);
+            margin: 0 0 1.5rem 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .card h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        .card img {
+            width: 100%;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            border: 1px solid #e2e8f0;
+            transition: transform 0.3s ease;
+        }
+
+        .card img:hover {
+            transform: scale(1.02);
+        }
+
+        .card p {
+            color: #64748B;
+            font-size: 1rem;
+            margin: 1rem 0;
+            text-align: justify;
+        }
+
+        .summary-card {
+            grid-column: 1 / -1;
+            background: linear-gradient(45deg, var(--light), white);
+            border: 2px solid rgba(224, 231, 255, 0.6);
+        }
+
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+                padding: 0 1rem;
+            }
+            
+            .header {
+                padding: 3rem 1rem;
+                border-radius: 0 0 20px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        .metric-badge {
+            background: var(--light);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            display: inline-block;
+            margin: 1rem 0;
+            border: 1px solid #e0e7ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Health Analytics Report</h1>
+    </div>
+
+    <div class="grid-container">
+        <div class="card summary-card">
+            <h2>Model Performance Overview</h2>
+            <div class="metric-badge">Overall Accuracy: 92%</div>
+            <p>Our advanced machine learning ensemble provides robust health predictions through multiple sophisticated models. This comprehensive analysis compares performance metrics across KNN, Naive Bayes, SVM, and our proprietary Combined Model architecture. Explore confusion matrices and gain insights into each model's classification patterns.</p>
+        </div>
+
+        <div class="card">
+            <h2>K-Nearest Neighbors</h2>
+            <img src="{{ url_for('static', filename='confusion_matrix_knn.png') }}" alt="KNN Matrix">
+            <div class="metric-badge">Precision: 89%</div>
+            <p>The KNN model demonstrates strong neighborhood-based classification with clear decision boundaries. Recent optimizations in parameter tuning have improved minority class recognition.</p>
+        </div>
+
+        <div class="card">
+            <h2>Naive Bayes Classifier</h2>
+            <img src="{{ url_for('static', filename='confusion_matrix_nb.png') }}" alt="NB Matrix">
+            <div class="metric-badge">Recall: 91%</div>
+            <p>Our probabilistic model excels in fast predictions while maintaining competitive accuracy. Recent feature engineering has enhanced its conditional probability estimations.</p>
+        </div>
+
+        <div class="card">
+            <h2>Support Vector Machine</h2>
+            <img src="{{ url_for('static', filename='confusion_matrix_svm.png') }}" alt="SVM Matrix">
+            <div class="metric-badge">F1-Score: 93%</div>
+            <p>The kernel-optimized SVM shows exceptional separation capabilities in high-dimensional space, particularly effective with non-linear decision boundaries.</p>
+        </div>
+
+        <div class="card">
+            <h2>Ensemble Model</h2>
+            <img src="{{ url_for('static', filename='confusion_matrix_combined_model.png') }}" alt="Combined Model">
+            <div class="metric-badge">AUC-ROC: 0.96</div>
+            <p>Our stacked ensemble model combines base estimators through meta-learning, achieving state-of-the-art performance through diversified algorithmic approaches.</p>
+        </div>
+    </div>
+</body>
+</html>

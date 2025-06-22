@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Health Diagnosis | Symptom Checker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@2.0.1/dist/css/multi-select-tag.css">
+    <link rel="shortcut icon" href="/static/images/Hospital.png" type="image/x-icon">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a0ca3;
+            --secondary: #4895ef;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --card-bg: #ffffff;
+            --text: #333333;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --input-bg: #f8f9fa;
+            --heart-color: #ff3366;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .header-content {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-content::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Language Selector */
+        .language-selector {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+        }
+
+        .goog-te-gadget-simple {
+            background-color: transparent !important;
+            border: 1px solid rgba(255,255,255,0.3) !important;
+            padding: 8px 12px !important;
+            border-radius: 30px !important;
+            font-size: 14px !important;
+            color: white !important;
+            backdrop-filter: blur(5px);
+        }
+
+        .goog-te-gadget-simple::before {
+            content: "🌐 " !important;
+            font-weight: normal !important;
+        }
+
+        .goog-te-gadget-simple img {
+            display: none !important;
+        }
+
+        /* Prediction Form */
+        .prediction-form {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            animation: fadeInUp 0.8s ease;
+            position: relative;
+            overflow: visible !important;
+        }
+
+        .prediction-form::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary), var(--accent));
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text);
+            font-size: 1rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: var(--input-bg);
+            color: var(--text);
+        }
+
+        input::placeholder {
+            color: #999;
+        }
+
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
+            background-color: var(--card-bg);
+        }
+
+        .symptoms-container {
+            grid-column: span 2;
+        }
+
+        /* Predict Button */
+        .predict-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .predict-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(110, 137, 163, 0.3), rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+            transition: all 0.5s ease;
+            opacity: 0;
+        }
+
+        .predict-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.6);
+        }
+
+        .predict-btn:hover::after {
+            opacity: 1;
+        }
+
+        .predict-btn:active {
+            transform: translateY(1px);
+        }
+
+        .predict-btn i {
+            margin-left: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .predict-btn:hover i {
+            transform: translateX(5px);
+        }
+
+        /* Heartbeat Animation - UPDATED FOR VISIBILITY */
+        @keyframes heartbeat {
+            0% { transform: scale(1) translateY(-50%); opacity: 0.6; }
+            25% { transform: scale(1.05) translateY(-50%); opacity: 0.8; }
+            50% { transform: scale(1.1) translateY(-50%); opacity: 1; }
+            75% { transform: scale(1.05) translateY(-50%); opacity: 0.8; }
+            100% { transform: scale(1) translateY(-50%); opacity: 0.6; }
+        }
+
+        .health-icon {
+            position: absolute;
+            right: 30px;
+            top: 60%;
+            transform: translateY(-50%);
+            font-size: 120px;
+            z-index: 0;
+            animation: heartbeat 1.2s ease-in-out infinite;
+            color: var(--heart-color);
+            text-shadow: 0 0 20px rgba(255, 51, 102, 0.4);
+            filter: drop-shadow(0 0 10px rgba(255, 102, 153, 0.3));
+        }
+
+        
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .symptoms-container {
+                grid-column: span 1;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .header-content {
+                padding: 20px 15px;
+            }
+            
+            .language-selector {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-bottom: 15px;
+            }
+            
+            .health-icon {
+                display: none;
+            }
+        }
+
+        .multi-select-tag {
+            position: relative;
+            z-index: 1000 !important;
+        }
+
+        .multi-select-tag .wrapper {
+            max-height: 200px !important; /* Adjust the height as needed */
+            overflow-y: auto !important;
+        }
+
+        .multi-select-tag .item {
+            background: var(--accent) !important;
+            color: white !important;
+            border-radius: 20px !important;
+            padding: 3px 10px !important;
+            margin: 3px !important;
+            font-size: 0.9rem !important;
+        }
+
+        .multi-select-tag .remove {
+            color: white !important;
+            opacity: 0.8 !important;
+        }
+
+        .multi-select-tag .search {
+            font-size: 1rem !important;
+            padding: 8px !important;
+            background: transparent !important;
+            color: var(--text) !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="language-selector" id="google_translate_element"></div>
+                <h1>AI HEALTH DIAGNOSIS</h1>
+                <p class="subtitle">Advanced Symptom-Based Disease Prediction</p>
+            </div>
+        </header>
+        
+        <form id="predictionForm" method="POST" action="{{ url_for('result') }}" class="prediction-form">
+            <i class="fas fa-heartbeat health-icon"></i>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="title">Title</label>
+                    <select id="title" name="title" required onchange="updateGenderOptions()">
+                        <option value="" disabled selected>Select title</option>
+                        <option value="Mr.">Mr.</option>
+                        <option value="Mrs.">Mrs.</option>
+                        <option value="Dr.">Dr.</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" name="first_name" placeholder="Enter your first name" pattern="[A-Za-z]+" title="Please enter only alphabets" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" name="last_name" placeholder="Enter your last name" pattern="[A-Za-z]+" title="Please enter only alphabets" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number" id="age" name="age" placeholder="Enter your age" min="1" max="120" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select id="gender" name="gender" required>
+                        <option value="" disabled selected>Select gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group symptoms-container">
+                    <label for="symptoms_name">Select Your Symptoms</label>
+                    <select name="symptoms" id="symptoms_name" multiple required>
+                        <option value="itching">Itching</option>
+                        <option value="skin_rash">Skin Rash</option>
+                        <option value="nodal_skin_eruptions">Nodal Skin Eruptions</option>
+                        <option value="continuous_sneezing">Continuous Sneezing</option>
+                        <option value="shivering">Shivering</option>
+                        <option value="chills">Chills</option>
+                        <option value="joint_pain">Joint Pain</option>
+                        <option value="stomach_pain">Stomach Pain</option>
+                        <option value="acidity">Acidity</option>
+                        <option value="ulcers_on_tongue">Ulcers on Tongue</option>
+                        <option value="muscle_wasting">Muscle Wasting</option>
+                        <option value="vomiting">Vomiting</option>
+                        <option value="burning_micturition">Burning Micturition</option>
+                        <option value="spotting_urination">Spotting Urination</option>
+                        <option value="fatigue">Fatigue</option>
+                        <option value="weight_gain">Weight Gain</option>
+                        <option value="anxiety">Anxiety</option>
+                        <option value="cold_hands_and_feets">Cold Hands and Feet</option>
+                        <option value="mood_swings">Mood Swings</option>
+                        <option value="weight_loss">Weight Loss</option>
+                        <option value="restlessness">Restlessness</option>
+                        <option value="lethargy">Lethargy</option>
+                        <option value="patches_in_throat">Patches in Throat</option>
+                        <option value="irregular_sugar_level">Irregular Sugar Level</option>
+                        <option value="cough">Cough</option>
+                        <option value="high_fever">High Fever</option>
+                        <option value="sunken_eyes">Sunken Eyes</option>
+                        <option value="breathlessness">Breathlessness</option>
+                        <option value="sweating">Sweating</option>
+                        <option value="dehydration">Dehydration</option>
+                        <option value="indigestion">Indigestion</option>
+                        <option value="headache">Headache</option>
+                        <option value="yellowish_skin">Yellowish Skin</option>
+                        <option value="dark_urine">Dark Urine</option>
+                        <option value="nausea">Nausea</option>
+                        <option value="loss_of_appetite">Loss of Appetite</option>
+                        <option value="pain_behind_the_eyes">Pain Behind the Eyes</option>
+                        <option value="back_pain">Back Pain</option>
+                        <option value="constipation">Constipation</option>
+                        <option value="abdominal_pain">Abdominal Pain</option>
+                        <option value="diarrhoea">Diarrhoea</option>
+                        <option value="mild_fever">Mild Fever</mild_fever>
+                        <option value="yellow_urine">Yellow Urine</option>
+                        <option value="yellowing_of_eyes">Yellowing of Eyes</yellowing_of_eyes>
+                        <option value="acute_liver_failure">Acute Liver Failure</option>
+                        <option value="fluid_overload">Fluid Overload</option>
+                        <option value="swelling_of_stomach">Swelling of Stomach</option>
+                        <option value="swelled_lymph_nodes">Swelled Lymph Nodes</option>
+                        <option value="malaise">Malaise</option>
+                        <option value="blurred_and_distorted_vision">Blurred and Distorted Vision</option>
+                        <option value="phlegm">Phlegm</option>
+                        <option value="throat_irritation">Throat Irritation</option>
+                        <option value="redness_of_eyes">Redness of Eyes</redness_of_eyes>
+                        <option value="sinus_pressure">Sinus Pressure</option>
+                        <option value="runny_nose">Runny Nose</option>
+                        <option value="congestion">Congestion</option>
+                        <option value="chest_pain">Chest Pain</option>
+                        <option value="weakness_in_limbs">Weakness in Limbs</weakness_in_limbs>
+                        <option value="fast_heart_rate">Fast Heart Rate</option>
+                        <option value="pain_during_bowel_movements">Pain During Bowel Movements</option>
+                        <option value="pain_in_anal_region">Pain in Anal Region</option>
+                        <option value="bloody_stool">Bloody Stool</option>
+                        <option value="irritation_in_anus">Irritation in Anus</irritation_in_anus>
+                        <option value="neck_pain">Neck Pain</option>
+                        <option value="dizziness">Dizziness</option>
+                        <option value="cramps">Cramps</option>
+                        <option value="bruising">Bruising</bruising>
+                        <option value="obesity">Obesity</option>
+                        <option value="swollen_legs">Swollen Legs</swollen_legs>
+                        <option value="swollen_blood_vessels">Swollen Blood Vessels</option>
+                        <option value="puffy_face_and_eyes">Puffy Face and Eyes</puffy_face_and_eyes>
+                        <option value="enlarged_thyroid">Enlarged Thyroid</enlarged_thyroid>
+                        <option value="brittle_nails">Brittle Nails</brittle_nails>
+                        <option value="swollen_extremeties">Swollen Extremities</swollen_extremeties>
+                        <option value="excessive_hunger">Excessive Hunger</excessive_hunger>
+                        <option value="extra_marital_contacts">Extra Marital Contacts</extra_marital_contacts>
+                        <option value="drying_and_tingling_lips">Drying and Tingling Lips</drying_and_tingling_lips>
+                        <option value="slurred_speech">Slurred Speech</slurred_speech>
+                        <option value="knee_pain">Knee Pain</knee_pain>
+                        <option value="hip_joint_pain">Hip Joint Pain</hip_joint_pain>
+                        <option value="muscle_weakness">Muscle Weakness</muscle_weakness>
+                        <option value="stiff_neck">Stiff Neck</stiff_neck>
+                        <option value="swelling_joints">Swelling Joints</swelling_joints>
+                        <option value="movement_stiffness">Movement Stiffness</movement_stiffness>
+                        <option value="spinning_movements">Spinning Movements</spinning_movements>
+                        <option value="loss_of_balance">Loss of Balance</loss_of_balance>
+                        <option value="unsteadiness">Unsteadiness</unsteadiness>
+                        <option value="weakness_of_one_body_side">Weakness of One Body Side</weakness_of_one_body_side>
+                        <option value="loss_of_smell">Loss of Smell</loss_of_smell>
+                        <option value="bladder_discomfort">Bladder Discomfort</bladder_discomfort>
+                        <option value="foul_smell_of_urine">Foul Smell of Urine</foul_smell_of_urine>
+                        <option value="continuous_feel_of_urine">Continuous Feel of Urine</continuous_feel_of_urine>
+                        <option value="passage_of_gases">Passage of Gases</passage_of_gases>
+                        <option value="internal_itching">Internal Itching</internal_itching>
+                        <option value="toxic_look_(typhos)">Toxic Look (Typhos)</toxic_look_(typhos)>
+                        <option value="depression">Depression</depression>
+                        <option value="irritability">Irritability</irritability>
+                        <option value="muscle_pain">Muscle Pain</muscle_pain>
+                        <option value="altered_sensorium">Altered Sensorium</altered_sensorium>
+                        <option value="red_spots_over_body">Red Spots Over Body</red_spots_over_body>
+                        <option value="belly_pain">Belly Pain</belly_pain>
+                        <option value="abnormal_menstruation">Abnormal Menstruation</option>
+                        <option value="dischromic _patches">Dischromic Patches</dischromic _patches>
+                        <option value="watering_from_eyes">Watering from Eyes</watering_from_eyes>
+                        <option value="increased_appetite">Increased Appetite</increased_appetite>
+                        <option value="polyuria">Polyuria</polyuria>
+                        <option value="family_history">Family History</family_history>
+                        <option value="mucoid_sputum">Mucoid Sputum</mucoid_sputum>
+                        <option value="rusty_sputum">Rusty Sputum</rusty_sputum>
+                        <option value="lack_of_concentration">Lack of Concentration</lack_of_concentration>
+                        <option value="visual_disturbances">Visual Disturbances</visual_disturbances>
+                        <option value="receiving_blood_transfusion">Receiving Blood Transfusion</receiving_blood_transfusion>
+                        <option value="receiving_unsterile_injections">Receiving Unsterile Injections</receiving_unsterile_injections>
+                        <option value="coma">Coma</coma>
+                        <option value="stomach_bleeding">Stomach Bleeding</stomach_bleeding>
+                        <option value="distention_of_abdomen">Distention of Abdomen</distention_of_abdomen>
+                        <option value="history_of_alcohol_consumption">History of Alcohol Consumption</history_of_alcohol_consumption>
+                        <option value="fluid_overload">Fluid Overload</fluid_overload>
+                        <option value="blood_in_sputum">Blood in Sputum</blood_in_sputum>
+                        <option value="prominent_veins_on_calf">Prominent Veins on Calf</prominent_veins_on_calf>
+                        <option value="palpitations">Palpitations</palpitations>
+                        <option value="painful_walking">Painful Walking</painful_walking>
+                        <option value="pus_filled_pimples">Pus Filled Pimples</pus_filled_pimples>
+                        <option value="blackheads">Blackheads</blackheads>
+                        <option value="scurring">Scurring</scurring>
+                        <option value="skin_peeling">Skin Peeling</skin_peeling>
+                        <option value="silver_like_dusting">Silver Like Dusting</silver_like_dusting>
+                        <option value="small_dents_in_nails">Small Dents in Nails</small_dents_in_nails>
+                        <option value="inflammatory_nails">Inflammatory Nails</inflammatory_nails>
+                        <option value="blister">Blister</blister>
+                        <option value="red_sore_around_nose">Red Sore Around Nose</red_sore_around_nose>
+                        <option value="yellow_crust_ooze">Yellow Crust Ooze</yellow_crust_ooze>
+                    </select>
+                    <div id="symptomsError" style="color: var(--warning); margin-top: 5px;"></div>
+                </div>
+            </div>
+            
+            <button type="submit" class="predict-btn">
+                Predict Disease <i class="fas fa-arrow-right"></i>
+            </button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@2.0.1/dist/js/multi-select-tag.js"></script>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'en,hi,ta,te,kn,ml,mr,bn,gu,pa,ur,or,as',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+    </script>
+    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    
+    <script>
+        let multiSelectTag
+
+        // Initialize multi-select
+        function initializeMultiSelect(){
+            multiSelectTag = new MultiSelectTag('symptoms_name', {
+                rounded: true,
+                shadow: true,
+                placeholder: 'Search symptoms...',
+                tagColor: {
+                    textColor: '#ffffff',
+                    borderColor: '#f72585',
+                    bgColor: '#f72585',
+                },
+                onChange: function(values) {
+                    console.log(values);
+                    validateAbnormalMenstruation(); // Call validation on symptom change
+                }
+            });      
+        }
+        
+        // Dynamic Heartbeat Speed
+        const heartIcon = document.querySelector('.health-icon');
+        const predictBtn = document.querySelector('.predict-btn');
+        
+        predictBtn.addEventListener('mouseenter', () => {
+            heartIcon.style.animationDuration = '0.8s';
+        });
+        
+        predictBtn.addEventListener('mouseleave', () => {
+            heartIcon.style.animationDuration = '1.2s';
+        });
+        
+        // Update gender options based on title
+        function updateGenderOptions() {
+            const titleSelect = document.getElementById('title');
+            const genderSelect = document.getElementById('gender');
+            
+            // Clear existing options except the first disabled one
+            while (genderSelect.options.length > 1) {
+                genderSelect.remove(1);
+            }
+            
+            if (titleSelect.value === 'Mr.') {
+                addOption(genderSelect, 'male', 'Male');
+                genderSelect.value = 'male';
+            } else if (titleSelect.value === 'Mrs.') {
+                addOption(genderSelect, 'female', 'Female');
+                genderSelect.value = 'female';
+            } else if (titleSelect.value === 'Other'){
+                addOption(genderSelect, 'other', 'Other');
+                genderSelect.value = 'other';
+            } else {
+                addOption(genderSelect, 'male', 'Male');
+                addOption(genderSelect, 'female', 'Female');
+                addOption(genderSelect, 'other', 'Other');
+            }
+        }
+        
+        function addOption(selectElement, value, text) {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = text;
+            selectElement.appendChild(option);
+        }
+
+        function resetForm() {
+            document.getElementById('predictionForm').reset();
+
+            // Reset MultiSelectTag
+            if(multiSelectTag){
+                multiSelectTag.reset()
+            }
+
+            //Re-initialize multiSelectTag
+            initializeMultiSelect()
+
+            // Call any other functions needed to completely reset the form state
+            updateGenderOptions(); // Reset gender options
+            document.getElementById('symptomsError').textContent = ''; // Clear any error messages
+        }
+
+        function validateAbnormalMenstruation() {
+            const gender = document.getElementById('gender').value;
+            const symptomsSelect = document.getElementById('symptoms_name');
+            const selectedSymptoms = Array.from(symptomsSelect.selectedOptions).map(option => option.value);
+
+            if (gender === 'male' && selectedSymptoms.includes('abnormal_menstruation')) {
+                alert("As a male, you cannot select 'Abnormal Menstruation'. Please review your selections.");
+                resetForm();
+            }
+        }
+        
+        // Form validation
+        document.querySelector('#predictionForm').addEventListener('submit', function(e) {
+            const gender = document.getElementById('gender').value;
+            const symptomsSelect = document.getElementById('symptoms_name');
+            const selectedSymptoms = Array.from(symptomsSelect.selectedOptions).map(option => option.value);
+
+            if (gender === 'male' && selectedSymptoms.includes('abnormal_menstruation')) {
+                e.preventDefault(); // Prevent form submission
+                alert("As a male, you cannot select 'Abnormal Menstruation'. Please review your selections.");
+                resetForm();
+                return;
+            }
+
+
+            const symptoms = document.getElementById('symptoms_name').selectedOptions;
+            if (symptoms.length === 0) {
+                e.preventDefault();
+                document.getElementById('symptomsError').textContent = 'Please select at least one symptom';
+            } else {
+                document.getElementById('symptomsError').textContent = ''; // Clear the error message if symptoms are selected
+            }
+        });
+        
+        // Initialize form
+        updateGenderOptions();
+        initializeMultiSelect()
+
+    </script>
+</body>
+</html>
