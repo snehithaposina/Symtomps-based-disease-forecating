@@ -6,7 +6,7 @@ Health issues often start with mild symptoms, and early detection can play a cri
 
 The system is trained on a comprehensive dataset of diseases and their associated symptoms and provides real-time disease predictions through a user-friendly web interface.
 
-🔍 Features
+Features
 ✅ Input symptoms through a web form
 
 🧠 Predicts possible diseases using trained ML models
